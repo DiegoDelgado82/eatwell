@@ -1,0 +1,73 @@
+/* styles.css */
+.table-responsive {
+    overflow-x: auto;
+  }
+  
+  /* Encabezado celeste con texto blanco */
+  .custom-thead th {
+    background-color: #4fc3f7 !important; 
+    color: rgb(0, 0, 0) !important;
+    border: 1px solid #dee2e6 !important;
+    text-align: center !important;
+  }
+  
+  /* Filas alternadas grises */
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa !important;
+  }
+  
+  /* Centrado general */
+  .table td, .table th {
+    vertical-align: middle !important;
+    text-align: center !important;
+  }
+  
+  /* Borde para toda la tabla */
+  .table-bordered {
+    border: 1px solid #29d9e6 !important;
+  }
+  
+  /* Input centrado */
+  .input-centrado {
+    width: 80px;
+    margin: 0 auto;
+  }
+  /* Estilos para la tabla */
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6 !important; /* Borde en todas las celdas */
+}
+
+/* Líneas entre filas */
+.table tbody tr {
+  border-bottom: 1px solid #dee2e6 !important; /* Línea entre filas */
+}
+
+/* Eliminar el borde inferior de la última fila */
+.table tbody tr:last-child {
+  border-bottom: none !important;
+}
+.table tbody tr {
+    border-bottom: 1px solid #4fc3f7 !important; /* Línea celeste */
+  }
+
+  /* Centrar el logo */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh; /* Ajusta la altura según necesites */
+  }
+  
+  /* Estilos para el spinner */
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.25em;
+  }
+  
+  /* Texto debajo del spinner */
+  .loading-text {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+  }

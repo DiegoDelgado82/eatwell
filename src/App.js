@@ -14,13 +14,14 @@ function App() {
         <Navbar bg="light" expand="lg" className="shadow-sm">
           <Container>
             <Navbar.Brand as={Link} to="/">
-              <img
-                src={EatWellLogo}
-                width="150"
-                height="auto"
-                className="d-inline-block align-top"
-                alt="Logo EatWell"
-              />
+            <div className="text-center my-5">
+        <img
+          src={EatWellLogo}
+          alt="EatWell Logo"
+          className="img-fluid"
+          style={{ maxWidth: "200px" }}
+        />
+      </div>
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">

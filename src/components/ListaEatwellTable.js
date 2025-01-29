@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import DownloadExcelButton from "./DownloadExcelButton";
+import "../styles.css"; 
 
 function ListaEatwellTable() {
   const [registros, setRegistros] = useState([]);
@@ -73,7 +74,7 @@ function ListaEatwellTable() {
         productos: pedido,
         fecha: new Date(),
       });
-      alert("Pedido guardado correctamente en Firestore.");
+      alert("Se registró el pedido. Se puede descargar en Excel");
     } catch (error) {
       console.error("Error al guardar el pedido:", error);
       alert("Hubo un error al guardar el pedido.");

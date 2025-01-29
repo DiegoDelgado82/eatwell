@@ -31,7 +31,7 @@ function ExcelUploader() {
       for (const row of data) {
         await addDoc(collection(db, "ListaEatwell"), row); // "excelData" es el nombre de la colección
       }
-      alert("Datos subidos correctamente a Firestore.");
+      alert("Se guardaron los datos correctamente.");
     } catch (error) {
       console.error("Error al subir los datos:", error);
       alert("Hubo un error al subir los datos.");
