@@ -1,14 +1,14 @@
 // src/components/ListaEatwellTable.js
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase"; // Importa la configuración de Firebase
+import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
+import DownloadExcelButton from "./DownloadExcelButton"; // Importa el nuevo componente
 
 function ListaEatwellTable() {
-  const [registros, setRegistros] = useState([]); // Almacena los registros de Firestore
-  const [loading, setLoading] = useState(true); // Indica si los datos se están cargando
-  const [cantidades, setCantidades] = useState({}); // Almacena las cantidades ingresadas por el usuario
+  const [registros, setRegistros] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [cantidades, setCantidades] = useState({});
 
-  // Cargar los registros de Firestore al montar el componente
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,18 +25,11 @@ function ListaEatwellTable() {
     fetchData();
   }, []);
 
-  // Maneja el cambio en el campo de cantidad
   const handleCantidadChange = (id, value) => {
     const cantidad = parseInt(value, 10);
     if (!isNaN(cantidad) && cantidad > 0) {
       setCantidades({ ...cantidades, [id]: cantidad });
     }
-  };
-
-  // Maneja el envío de las cantidades (puedes personalizar esta función)
-  const handleSubmit = () => {
-    console.log("Cantidades ingresadas:", cantidades);
-    alert("Cantidades guardadas correctamente.");
   };
 
   if (loading) {
@@ -74,7 +67,7 @@ function ListaEatwellTable() {
           ))}
         </tbody>
       </table>
-      <button onClick={handleSubmit}>Guardar cantidades</button>
+      <DownloadExcelButton registros={registros} cantidades={cantidades} />
     </div>
   );
 }
