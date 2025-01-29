@@ -1,71 +1,50 @@
 // src/App.js
-import React, { useState } from "react";
-import { Container, Navbar, Nav, Button } from "react-bootstrap";
-import ListaEatwellTable from "./components/ListaEatwellTable"; // Importa el componente
-import EatWellLogo from "./img/EatWell.png"; // Asegúrate de tener la imagen en la carpeta src
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Navbar, Nav, Container } from "react-bootstrap";
+import ListaEatwellTable from "./components/ListaEatwellTable";
+import VerPedidos from "./components/VerPedidos";
+import EatWellLogo from "./img/EatWell.png"; // Asegúrate de tener la imagen en esta ruta
 
 function App() {
-  const [mostrarLista, setMostrarLista] = useState(false); // Estado para alternar vistas
-
-  // Función para manejar el clic en "Generar pedido"
-  const handleGenerarPedido = () => {
-    setMostrarLista(true);
-  };
-
-  // Función para volver a la vista principal
-  const handleVolver = () => {
-    setMostrarLista(false);
-  };
-
   return (
-    <div>
-      {/* Encabezado con logo y botones */}
-      <Navbar bg="light" expand="lg" className="mb-4">
-        <Container>
-          <Navbar.Brand href="#">
-            <img
-              src={EatWellLogo}
-              width="120"
-              height="auto"
-              className="d-inline-block align-top"
-              alt="EatWell Logo"
-            />
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              {!mostrarLista && (
-                
-                <Button variant="outline-primary" className="me-2" onClick={handleGenerarPedido}>
-                  Generar pedido
-                </Button>
-                
+    <Router>
+      <div>
+        {/* Encabezado con logo y menú */}
+        <Navbar bg="light" expand="lg" className="shadow-sm">
+          <Container>
+            <Navbar.Brand as={Link} to="/">
+              <img
+                src={EatWellLogo}
+                width="150"
+                height="auto"
+                className="d-inline-block align-top"
+                alt="Logo EatWell"
+              />
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="ms-auto">
+                <Nav.Link as={Link} to="/" className="me-3">
+                  <button className="btn btn-outline-primary">Generar Pedido</button>
+                </Nav.Link>
+                <Nav.Link as={Link} to="/ver-pedidos">
+                  <button className="btn btn-outline-secondary">Ver Pedidos</button>
+                </Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
 
-                
-              )}
-              {mostrarLista && (
-                <Button variant="outline-secondary" onClick={handleVolver}>
-                  Volver
-                </Button>
-                
-              )}
-            </Nav>
-          </Navbar.Collapse>
+        {/* Contenido principal */}
+        <Container className="mt-4">
+          <Routes>
+            <Route path="/" element={<ListaEatwellTable />} />
+            <Route path="/ver-pedidos" element={<VerPedidos />} />
+          </Routes>
         </Container>
-      </Navbar>
-
-      {/* Contenido dinámico */}
-      <Container>
-        {!mostrarLista ? (
-          <>
-            <h1>Bienvenido a EatWell</h1>
-            <p>Selecciona una opción del menú para comenzar.</p>
-          </>
-        ) : (
-          <ListaEatwellTable />
-        )}
-      </Container>
-    </div>
+      </div>
+    </Router>
   );
 }
 

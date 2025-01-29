@@ -36,3 +36,83 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* Para mejorar la responsividad */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ajustar texto en celdas */
+.table td, .table th {
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+/* Estilo responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  
+  .table thead {
+    display: none; /* Ocultar cabecera en móviles */
+  }
+  
+  .table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+  }
+  
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .table td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  /* Asignar labels para móviles */
+  td:nth-of-type(1)::before { content: "Ean: "; }
+  td:nth-of-type(2)::before { content: "Descripción: "; }
+  td:nth-of-type(3)::before { content: "UC: "; }
+  td:nth-of-type(4)::before { content: "Cantidad: "; }
+}
+
+/* Estilos personalizados para la tabla */
+.custom-thead {
+  background-color: #4fc3f7 !important; /* Celeste claro */
+  color: white !important;
+  border-bottom: 2px solid #039be5 !important;
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6 !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(248, 249, 250, 0.7); /* Gris muy claro */
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(207, 216, 220, 0.5) !important; /* Gris azulado */
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.align-middle {
+  vertical-align: middle !important;
+}
