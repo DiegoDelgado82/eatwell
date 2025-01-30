@@ -50,9 +50,8 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   background: white; /* Fondo blanco para mejorar visibilidad */
-  padding: 20px;
-  border-radius: 10px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  padding: 10px;
+  
 }
 
 /* Ajustar texto en celdas */
