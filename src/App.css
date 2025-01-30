@@ -116,3 +116,22 @@
 .align-middle {
   vertical-align: middle !important;
 }
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh; /* Ajusta la altura según necesites */
+}
+
+/* Estilos para el spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.25em;
+}
+
+/* Texto debajo del spinner */
+.loading-text {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+}

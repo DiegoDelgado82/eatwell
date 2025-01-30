@@ -51,23 +51,73 @@
     border-bottom: 1px solid #4fc3f7 !important; /* Línea celeste */
   }
 
-  /* Centrar el logo */
-.logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 20vh; /* Ajusta la altura según necesites */
+/* Estilos para la tabla */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.custom-thead {
+  background-color: #4fc3f7; /* Celeste */
+  color: white; /* Texto blanco */
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6 !important; /* Bordes en todas las celdas */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(248, 249, 250, 0.7); /* Filas alternadas grises */
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(207, 216, 220, 0.5); /* Efecto hover */
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.align-middle {
+  vertical-align: middle !important;
+}
+/* styles.css */
+/* Contenedor del spinner */
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;  /* Altura ajustable según necesidad */
+}
+
+/* Texto debajo del spinner */
+.loading-text {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #4fc3f7;
+  font-weight: 500;
+}
+
+/* Contenedor de la tabla */
+.table-container {
+  max-width: 95%;  /* Ajusta el ancho máximo */
+  margin: 0 auto;  /* Centrado horizontal */
+  padding: 20px;
+}
+
+/* Ajustes responsive para móviles */
+@media (max-width: 768px) {
+  .table-container {
+    max-width: 100%;
+    padding: 10px;
   }
   
-  /* Estilos para el spinner */
-  .spinner-border {
-    width: 3rem;
-    height: 3rem;
-    border-width: 0.25em;
+  .table td, .table th {
+    font-size: 0.9rem;
   }
   
-  /* Texto debajo del spinner */
   .loading-text {
-    font-size: 1.2rem;
-    margin-top: 1rem;
+    font-size: 1rem;
   }
+}

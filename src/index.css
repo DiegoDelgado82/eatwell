@@ -2,7 +2,7 @@ body {
   margin: 0;
 
   font-family: 'Poppins', sans-serif;
-
+background-color: rgb(247, 239, 222);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -16,3 +16,4 @@ body {
 .container {
   margin-top: 20px;
 }
+  /* Centrar el logo */

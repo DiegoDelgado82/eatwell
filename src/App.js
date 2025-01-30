@@ -5,6 +5,8 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import ListaEatwellTable from "./components/ListaEatwellTable";
 import VerPedidos from "./components/VerPedidos";
 import EatWellLogo from "./img/EatWell.png"; // Asegúrate de tener la imagen en esta ruta
+import "./App.css"; 
+
 
 function App() {
   return (
@@ -23,7 +25,7 @@ function App() {
         />
       </div>
             </Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+           
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ms-auto">
                 <Nav.Link as={Link} to="/" className="me-3">

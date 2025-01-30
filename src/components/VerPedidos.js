@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import * as XLSX from "xlsx"; // Importa la librería xlsx
+import { BounceLoader } from "react-spinners";
+import "../styles.css"
 
 function VerPedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -58,7 +60,16 @@ function VerPedidos() {
   };
 
   if (loading) {
-    return <p>Cargando pedidos...</p>;
+    return (
+      <div className="spinner-container">
+        <BounceLoader 
+          color="#4fc3f7"  // Color celeste para matchear el diseño
+          size={80}        // Tamaño del spinner
+          speedMultiplier={1.5}  // Velocidad de animación
+        />
+        <p className="loading-text">Cargando pedidos anteriores...</p>
+      </div>
+    );
   }
 
   return (

@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import DownloadExcelButton from "./DownloadExcelButton";
-import "../styles.css"; 
+import { BounceLoader } from "react-spinners";
+import "../styles.css";
 
 function ListaEatwellTable() {
   const [registros, setRegistros] = useState([]);
@@ -53,20 +54,20 @@ function ListaEatwellTable() {
         };
       })
       .filter((item) => item !== null); // Filtra los registros nulos
-  
+
     // Si no hay productos en el pedido, muestra un mensaje
     if (pedido.length === 0) {
       alert("No hay productos en el pedido.");
       return;
     }
-  
+
     // Genera el nombre del documento con la fecha actual
     const fecha = new Date();
     const dia = String(fecha.getDate()).padStart(2, "0");
     const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Los meses van de 0 a 11
     const año = fecha.getFullYear();
     const nombreDocumento = `pedido${dia}-${mes}-${año}`;
-  
+
     try {
       // Guarda el pedido como un documento en la colección "pedidos"
       await addDoc(collection(db, "pedidos"), {
@@ -82,40 +83,49 @@ function ListaEatwellTable() {
   };
 
   if (loading) {
-    return <p>Cargando registros...</p>;
+    return (
+      <div className="spinner-container">
+        <BounceLoader 
+          color="#4fc3f7"  // Color celeste para matchear el diseño
+          size={80}        // Tamaño del spinner
+          speedMultiplier={1.5}  // Velocidad de animación
+        />
+        <p className="loading-text">Cargando Lista de productos...</p>
+      </div>
+    );
   }
 
   return (
     <div className="table-responsive">
-    <table className="table table-bordered table-striped table-hover">
-    <thead className="custom-thead">
-      <tr>
-        <th className="text-center">Ean</th>
-        <th className="text-center">Descripción</th>
-        <th className="text-center">UC</th>
-        <th className="text-center">Cantidad</th>
-      </tr>
-    </thead>
-    <tbody>
-      {registros.map((registro) => (
-        <tr key={registro.id} className="text-center">
-          <td className="align-middle">{registro.ean}</td>
-          <td className="align-middle">{registro.Descripcion}</td>
-          <td className="align-middle">{registro.UC}</td>
-          <td className="align-middle">
-            <input
-              type="number"
-              min="1"
-              style={{ width: '80px' }}
-              value={cantidades[registro.id] || ""}
-              onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
-              className="form-control form-control-sm mx-auto"
-            />
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+      <table className="table table-bordered table-striped table-hover">
+        <thead className="custom-thead">
+          <tr>
+            <th className="text-center">Ean</th>
+            <th className="text-center">Descripción</th>
+            <th className="text-center">UC</th>
+            <th className="text-center">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {registros.map((registro) => (
+            <tr key={registro.id} className="text-center">
+              <td className="align-middle">{registro.ean}</td>
+              <td className="align-middle">{registro.Descripcion}</td>
+              <td className="align-middle">{registro.UC}</td>
+              <td className="align-middle">
+                <input
+                  type="number"
+                  min="1"
+                  style={{ width: '80px' }}
+                  value={cantidades[registro.id] || ""}
+                  onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
+                  className="form-control form-control-sm mx-auto"
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <button onClick={guardarPedido} className="btn btn-primary">
         Guardar Pedido
       </button>
