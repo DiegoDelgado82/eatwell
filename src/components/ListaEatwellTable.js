@@ -96,6 +96,9 @@ function ListaEatwellTable() {
   }
 
   return (
+   <div className="table-container">
+    
+      
     <div className="table-responsive">
       <table className="table table-bordered table-striped table-hover">
         <thead className="custom-thead">
@@ -126,11 +129,14 @@ function ListaEatwellTable() {
           ))}
         </tbody>
       </table>
-      <button onClick={guardarPedido} className="btn btn-primary">
+      
+    </div>
+  
+    <button onClick={guardarPedido} className="btn btn-primary">
         Guardar Pedido
       </button>
       <DownloadExcelButton registros={registros} cantidades={cantidades} />
-    </div>
+   </div>
   );
 }
 

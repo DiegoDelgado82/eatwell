@@ -39,9 +39,20 @@
 
 
 /* Para mejorar la responsividad */
+
+
 .table-responsive {
+  background-color: rgb(180, 209, 213) !important;
+  display: flex;
+  justify-content: center;
+  width: 80%; /* Ajusta el ancho de la tabla */
+  max-width: 900px; /* Máximo ancho para evitar que sea muy grande */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  background: white; /* Fondo blanco para mejorar visibilidad */
+  padding: 20px;
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
 }
 
 /* Ajustar texto en celdas */
