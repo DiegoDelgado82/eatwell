@@ -45,7 +45,7 @@
   background-color: rgb(180, 209, 213) !important;
   display: flex;
   justify-content: center;
-  width: 80%; /* Ajusta el ancho de la tabla */
+  width:100%; /* Ajusta el ancho de la tabla */
   max-width: 900px; /* Máximo ancho para evitar que sea muy grande */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
