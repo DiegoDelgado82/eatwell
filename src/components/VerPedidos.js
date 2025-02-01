@@ -1,119 +1,139 @@
 // src/components/VerPedidos.js
-import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
-import * as XLSX from "xlsx"; // Importa la librería xlsx
-import { BounceLoader } from "react-spinners";
-import "../styles.css"
+import React, { useState, useEffect } from 'react';
+import { db } from '../firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { Dropdown } from 'react-bootstrap';
+import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 function VerPedidos() {
+  const [sucursalSeleccionada, setSucursalSeleccionada] = useState('');
   const [pedidos, setPedidos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [detallePedido, setDetallePedido] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Cargar la lista de pedidos al montar el componente
-  useEffect(() => {
-    const fetchPedidos = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "pedidos"));
-        const pedidosFiltrados = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setPedidos(pedidosFiltrados);
-      } catch (error) {
-        console.error("Error al cargar los pedidos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const sucursales = [
+    "Carrefour Colón",
+    "Carrefour Jardín",
+    "Carrefour Recta",
+    "Carrefour Villa",
+    "Maxi Juan B Justo",
+    "Maxi Cacheuta"
+  ];
 
-    fetchPedidos();
-  }, []);
+  const cargarPedidos = async (sucursal) => {
+    setLoading(true);
+    try {
+      // Consulta para buscar por sucursal y ordenar por fecha
+      const q = query(
+        collection(db, 'pedidos'),
+        where('sucursal', '==', sucursal)
+      );
 
-  // Cargar el detalle de un pedido específico
-  const cargarDetallePedido = (pedido) => {
-    setDetallePedido(pedido);
+      const querySnapshot = await getDocs(q);
+      const datos = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        fecha: doc.data().fecha.toDate().toLocaleDateString() // Formatear fecha
+      }));
+
+      setPedidos(datos);
+    } catch (error) {
+      console.error("Error al cargar pedidos:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message.includes('index') 
+          ? 'Se requiere crear un índice en Firestore. Haz clic en el enlace del error.'
+          : 'No se pudieron cargar los pedidos',
+        confirmButtonColor: '#4fc3f7'
+      });
+    }
+    setLoading(false);
   };
 
-  // Función para descargar el Excel
-  const handleDownloadExcel = () => {
-    if (!detallePedido || detallePedido.productos.length === 0) {
-      alert("No hay datos para descargar.");
-      return;
-    }
-
-    // Formatea los datos para el Excel
-    const datosExcel = detallePedido.productos.map((producto) => ({
-      Ean: producto.ean,
-      Cantidad: producto.Cantidad,
-      Descripcion: producto.Descripcion,
+  const descargarPedidoExcel = (pedido) => {
+    // Preparar datos para el Excel
+    const datos = pedido.productos.map(producto => ({
+      EAN: producto.ean,
+      Descripción: producto.Descripcion,
+      Cantidad: producto.Cantidad
     }));
 
-    // Crea la hoja de cálculo
-    const worksheet = XLSX.utils.json_to_sheet(datosExcel);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Pedido");
+    // Crear el archivo Excel
+    const libro = XLSX.utils.book_new();
+    const hoja = XLSX.utils.json_to_sheet(datos);
+    XLSX.utils.book_append_sheet(libro, hoja, 'Pedido');
 
-    // Genera el archivo Excel
-    XLSX.writeFile(workbook, `${detallePedido.nombre}.xlsx`);
+    // Descargar el archivo
+    const nombreArchivo = `pedido_${pedido.fecha.replace(/\//g, '-')}_${pedido.sucursal}.xlsx`;
+    XLSX.writeFile(libro, nombreArchivo);
   };
 
-  if (loading) {
-    return (
-      <div className="spinner-container">
-        <BounceLoader 
-          color="#4fc3f7"  // Color celeste para matchear el diseño
-          size={80}        // Tamaño del spinner
-          speedMultiplier={1.5}  // Velocidad de animación
-        />
-        <p className="loading-text">Cargando pedidos anteriores...</p>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <h2>Pedidos Realizados</h2>
-      <ul>
-        {pedidos.map((pedido) => (
-          <li key={pedido.id}>
-            <button
-              onClick={() => cargarDetallePedido(pedido)}
-              className="btn btn-link"
-            >
-              {pedido.nombre}
-            </button>
-          </li>
-        ))}
-      </ul>
+    <div className="container mt-3">
+      <div className="row mb-4">
+        <div className="col-md-6">
+          <Dropdown>
+            <Dropdown.Toggle variant="primary" id="dropdown-sucursales">
+              {sucursalSeleccionada || "Seleccionar Sucursal"}
+            </Dropdown.Toggle>
 
-      {detallePedido && (
-        <div>
-          <h3>Detalle del pedido: {detallePedido.nombre}</h3>
-          <button onClick={handleDownloadExcel} className="btn btn-success mb-3">
-            Descargar Excel
-          </button>
-          <table border="1" cellPadding="10" cellSpacing="0">
-            <thead>
-              <tr>
-                <th>Ean</th>
-                <th>Descripción</th>
-                <th>Cantidad</th>
-              </tr>
-            </thead>
-            <tbody>
-              {detallePedido.productos.map((producto, index) => (
-                <tr key={index}>
-                  <td>{producto.ean}</td>
-                  <td>{producto.Descripcion}</td>
-                  <td>{producto.Cantidad}</td>
-                </tr>
+            <Dropdown.Menu>
+              {sucursales.map((sucursal, index) => (
+                <Dropdown.Item 
+                  key={index}
+                  onClick={() => {
+                    setSucursalSeleccionada(sucursal);
+                    cargarPedidos(sucursal);
+                  }}
+                >
+                  {sucursal}
+                </Dropdown.Item>
               ))}
-            </tbody>
-          </table>
+            </Dropdown.Menu>
+          </Dropdown>
         </div>
-      )}
+      </div>
+
+      {loading && <p>Cargando pedidos...</p>}
+
+      <div className="table-responsive">
+        <table className="table table-striped table-hover">
+          <thead className="bg-primary text-white">
+            <tr>
+              <th>Fecha</th>
+              <th>Sucursal</th>
+              <th>Productos</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pedidos.map((pedido) => (
+              <tr key={pedido.id}>
+                <td>{pedido.fecha}</td>
+                <td>{pedido.sucursal}</td>
+                <td>
+                  <ul className="list-unstyled">
+                    {pedido.productos.map((producto, index) => (
+                      <li key={index}>
+                        {producto.Descripcion} (Cantidad: {producto.Cantidad})
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td>
+                  <button
+                    className="btn btn-success btn-sm"
+                    onClick={() => descargarPedidoExcel(pedido)}
+                  >
+                    Descargar Excel
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

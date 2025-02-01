@@ -121,3 +121,42 @@
     font-size: 1rem;
   }
 }
+
+/* Header más compacto */
+header {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Espaciado general reducido */
+main {
+  padding-top: 80px !important; /* Ajustar según altura del header */
+}
+
+/* Botones compactos */
+.btn-sm {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem !important;
+}
+
+/* Tabla sin márgenes excesivos */
+.table-container {
+  margin-top: 0.5rem !important;
+}
+
+/* Botones más compactos */
+.btn {
+  font-size: 0.9rem;
+  min-width: 120px;
+}
+
+/* Tabla más compacta */
+.table td, .table th {
+  padding: 0.5rem;
+}
+
+/* Inputs más pequeños */
+.form-control-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}

@@ -1,142 +1,194 @@
 // src/components/ListaEatwellTable.js
-import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import DownloadExcelButton from "./DownloadExcelButton";
-import { BounceLoader } from "react-spinners";
-import "../styles.css";
+import React, { useState, useEffect } from 'react';
+import { db } from '../firebase';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
+import Swal from 'sweetalert2';
+import { BounceLoader } from 'react-spinners';
+import DownloadExcelButton from './DownloadExcelButton';
+import { Form } from 'react-bootstrap';
+import '../styles.css';
 
 function ListaEatwellTable() {
   const [registros, setRegistros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cantidades, setCantidades] = useState({});
+  const [sucursal, setSucursal] = useState('');
 
-  // Cargar los registros de Firestore al montar el componente
+  const sucursales = [
+    "Carrefour Colón",
+    "Carrefour Jardín",
+    "Carrefour Recta",
+    "Carrefour Villa",
+    "Maxi Juan B Justo",
+    "Maxi Cacheuta"
+  ];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "ListaEatwell"));
-        const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const querySnapshot = await getDocs(collection(db, 'ListaEatwell'));
+        const data = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          ean: doc.data().ean.toString() // Asegurar que ean sea string
+        }));
         setRegistros(data);
       } catch (error) {
         console.error("Error al cargar los registros:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudieron cargar los productos',
+          confirmButtonColor: '#4fc3f7'
+        });
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
-  // Maneja el cambio en el campo de cantidad
   const handleCantidadChange = (id, value) => {
     const cantidad = parseInt(value, 10);
     if (!isNaN(cantidad) && cantidad > 0) {
-      setCantidades({ ...cantidades, [id]: cantidad });
+      setCantidades(prev => ({ ...prev, [id]: cantidad }));
     }
   };
 
-  // Guardar el pedido en Firestore
   const guardarPedido = async () => {
-    // Filtra los registros que tienen una cantidad ingresada
     const pedido = registros
-      .filter((registro) => cantidades[registro.id] > 0)
-      .map((registro) => {
-        // Verifica que todos los campos estén definidos
-        if (!registro.ean || !registro.Descripcion || !cantidades[registro.id]) {
-          console.error("Datos incompletos para el registro:", registro);
-          return null; // Ignora este registro
-        }
-        return {
-          ean: registro.ean,
-          Descripcion: registro.Descripcion,
-          Cantidad: cantidades[registro.id],
-        };
-      })
-      .filter((item) => item !== null); // Filtra los registros nulos
+      .filter(registro => cantidades[registro.id] > 0)
+      .map(registro => ({
+        ean: registro.ean,
+        Descripcion: registro.Descripcion,
+        Cantidad: cantidades[registro.id]
+      }));
 
-    // Si no hay productos en el pedido, muestra un mensaje
     if (pedido.length === 0) {
-      alert("No hay productos en el pedido.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Pedido vacío',
+        text: 'No has seleccionado ningún producto',
+        confirmButtonColor: '#4fc3f7'
+      });
       return;
     }
 
-    // Genera el nombre del documento con la fecha actual
-    const fecha = new Date();
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Los meses van de 0 a 11
-    const año = fecha.getFullYear();
-    const nombreDocumento = `pedido${dia}-${mes}-${año}`;
+    if (!sucursal) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Sucursal no seleccionada',
+        text: 'Debes seleccionar una sucursal antes de guardar el pedido',
+        confirmButtonColor: '#4fc3f7'
+      });
+      return;
+    }
 
     try {
-      // Guarda el pedido como un documento en la colección "pedidos"
-      await addDoc(collection(db, "pedidos"), {
+      const fecha = new Date();
+      const dia = String(fecha.getDate()).padStart(2, '0');
+      const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+      const año = fecha.getFullYear();
+      const nombreDocumento = `pedido${dia}-${mes}-${año} ${sucursal}`;
+
+      await addDoc(collection(db, 'pedidos'), {
         nombre: nombreDocumento,
+        sucursal: sucursal,
         productos: pedido,
-        fecha: new Date(),
+        fecha: new Date()
       });
-      alert("Se registró el pedido. Se puede descargar en Excel");
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Pedido guardado',
+        text: `Pedido registrado para ${sucursal}`,
+        confirmButtonColor: '#4fc3f7'
+      });
+
+      setCantidades({}); // Limpiar cantidades
     } catch (error) {
-      console.error("Error al guardar el pedido:", error);
-      alert("Hubo un error al guardar el pedido.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo guardar el pedido',
+        confirmButtonColor: '#4fc3f7'
+      });
+      console.error('Error al guardar el pedido:', error);
     }
   };
 
   if (loading) {
     return (
       <div className="spinner-container">
-        <BounceLoader 
-          color="#4fc3f7"  // Color celeste para matchear el diseño
-          size={80}        // Tamaño del spinner
-          speedMultiplier={1.5}  // Velocidad de animación
-        />
-        <p className="loading-text">Cargando Lista de productos...</p>
+        <BounceLoader color="#4fc3f7" size={80} speedMultiplier={1.5} />
+        <p className="loading-text">Cargando productos...</p>
       </div>
     );
   }
 
   return (
-   <div className="table-container">
-    
-      
-    <div className="table-responsive">
-      <table className="table table-bordered table-striped table-hover">
-        <thead className="custom-thead">
-          <tr>
-            <th className="text-center">Ean</th>
-            <th className="text-center">Descripción</th>
-            <th className="text-center">UC</th>
-            <th className="text-center">Cantidad</th>
-          </tr>
-        </thead>
-        <tbody>
-          {registros.map((registro) => (
-            <tr key={registro.id} className="text-center">
-              <td className="align-middle">{registro.ean}</td>
-              <td className="align-middle">{registro.Descripcion}</td>
-              <td className="align-middle">{registro.UC}</td>
-              <td className="align-middle">
-                <input
-                  type="number"
-                  min="1"
-                  style={{ width: '80px' }}
-                  value={cantidades[registro.id] || ""}
-                  onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
-                  className="form-control form-control-sm mx-auto"
-                />
-              </td>
-            </tr>
+    <div className="table-container">
+      <div className="mb-3">
+        <Form.Select
+          value={sucursal}
+          onChange={(e) => setSucursal(e.target.value)}
+        >
+          <option value="">Seleccionar sucursal</option>
+          {sucursales.map((sucursal, index) => (
+            <option key={index} value={sucursal}>
+              {sucursal}
+            </option>
           ))}
-        </tbody>
-      </table>
-      
+        </Form.Select>
+      </div>
+
+      <div className="table-responsive">
+        <table className="table table-bordered table-striped table-hover">
+          <thead className="custom-thead">
+            <tr>
+              <th className="text-center">Ean</th>
+              <th className="text-center">Descripción</th>
+              <th className="text-center">UC</th>
+              <th className="text-center">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            {registros.map(registro => (
+              <tr key={registro.id} className="text-center">
+                <td className="align-middle">{registro.ean}</td>
+                <td className="align-middle">{registro.Descripcion}</td>
+                <td className="align-middle">{registro.UC}</td>
+                <td className="align-middle">
+                  <input
+                    type="number"
+                    min="1"
+                    style={{ width: '80px' }}
+                    value={cantidades[registro.id] || ''}
+                    onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
+                    className="form-control form-control-sm mx-auto"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="d-flex justify-content-center gap-2 my-3">
+        <button
+          onClick={guardarPedido}
+          className="btn btn-primary px-4 py-2"
+          disabled={!sucursal}
+        >
+          Guardar Pedido
+        </button>
+        <DownloadExcelButton
+          registros={registros}
+          cantidades={cantidades}
+          sucursal={sucursal}
+        />
+      </div>
     </div>
-  
-    <button onClick={guardarPedido} className="btn btn-primary">
-        Guardar Pedido
-      </button>
-      <DownloadExcelButton registros={registros} cantidades={cantidades} />
-   </div>
   );
 }
 
