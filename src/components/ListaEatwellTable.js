@@ -32,6 +32,7 @@ function ListaEatwellTable() {
           ...doc.data(),
           ean: doc.data().ean.toString() // Asegurar que ean sea string
         }));
+        data.sort((a, b) => a.pos - b.pos);
         setRegistros(data);
       } catch (error) {
         console.error("Error al cargar los registros:", error);
@@ -149,7 +150,7 @@ function ListaEatwellTable() {
               <th className="text-center">Ean</th>
               <th className="text-center">Descripción</th>
               <th className="text-center">UC</th>
-              <th className="text-center">Cantidad</th>
+              <th className="text-center">Cant</th>
             </tr>
           </thead>
           <tbody>
@@ -162,7 +163,7 @@ function ListaEatwellTable() {
                   <input
                     type="number"
                     min="1"
-                    style={{ width: '80px' }}
+                    style={{ width: '60px' }}
                     value={cantidades[registro.id] || ''}
                     onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
                     className="form-control form-control-sm mx-auto"

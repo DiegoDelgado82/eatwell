@@ -6,6 +6,7 @@ import MainLayout from './components/MainLayout';
 import ListaEatwellTable from './components/ListaEatwellTable';
 import VerPedidos from './components/VerPedidos';
 import RealizarPrecios from './components/RealizarPrecios';
+import CargarLista from './components/ExcelUploader';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="generar-pedido" element={<ListaEatwellTable />} />
           <Route path="ver-pedidos" element={<VerPedidos />} />
           <Route path="realizar-precios" element={<RealizarPrecios />} />
+          <Route path="cargar-lista" element={<CargarLista />} />
         </Route>
       </Routes>
     </Router>

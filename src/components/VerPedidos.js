@@ -1,10 +1,11 @@
 // src/components/VerPedidos.js
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Dropdown } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
+import { FaDownload } from 'react-icons/fa';
 
 function VerPedidos() {
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState('');
@@ -26,7 +27,8 @@ function VerPedidos() {
       // Consulta para buscar por sucursal y ordenar por fecha
       const q = query(
         collection(db, 'pedidos'),
-        where('sucursal', '==', sucursal)
+        where('sucursal', '==', sucursal),
+        
       );
 
       const querySnapshot = await getDocs(q);
@@ -55,8 +57,8 @@ function VerPedidos() {
     // Preparar datos para el Excel
     const datos = pedido.productos.map(producto => ({
       EAN: producto.ean,
-      Descripción: producto.Descripcion,
-      Cantidad: producto.Cantidad
+      Cantidad: producto.Cantidad,
+      Descripción: producto.Descripcion
     }));
 
     // Crear el archivo Excel
@@ -100,34 +102,25 @@ function VerPedidos() {
       <div className="table-responsive">
         <table className="table table-striped table-hover">
           <thead className="bg-primary text-white">
-            <tr>
-              <th>Fecha</th>
-              <th>Sucursal</th>
-              <th>Productos</th>
-              <th>Acciones</th>
-            </tr>
+            
           </thead>
           <tbody>
             {pedidos.map((pedido) => (
               <tr key={pedido.id}>
                 <td>{pedido.fecha}</td>
-                <td>{pedido.sucursal}</td>
-                <td>
-                  <ul className="list-unstyled">
-                    {pedido.productos.map((producto, index) => (
-                      <li key={index}>
-                        {producto.Descripcion} (Cantidad: {producto.Cantidad})
-                      </li>
-                    ))}
-                  </ul>
-                </td>
+                
+                <td>{pedido.nombre}</td> {/* Mostrar el nombre del pedido */}
                 <td>
                   <button
                     className="btn btn-success btn-sm"
                     onClick={() => descargarPedidoExcel(pedido)}
                   >
-                    Descargar Excel
+                    <FaDownload 
+                                    className="download-icon"
+                                    
+                                  />
                   </button>
+                  
                 </td>
               </tr>
             ))}

@@ -3,19 +3,21 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import * as XLSX from 'xlsx';
-import { Button, Table, Form } from 'react-bootstrap';
+import { Table, Form } from 'react-bootstrap';
+import { FaTrash } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import '../styles.css';
 
 function RealizarPrecios() {
   const [items, setItems] = useState([]);
   const [busqueda, setBusqueda] = useState('');
   const [resultados, setResultados] = useState([]);
-  const [precios, setPrecios] = useState(() => {
+  const [cantidad, setCantidad] = useState(() => {
     const guardado = localStorage.getItem('precios');
     return guardado ? JSON.parse(guardado) : [];
   });
 
-  // Cargar items iniciales desde Firestore
+  // Cargar items desde Firestore
   useEffect(() => {
     const cargarItems = async () => {
       try {
@@ -23,115 +25,92 @@ function RealizarPrecios() {
         const datos = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          ean: doc.data().ean.toString() // Asegurar que ean sea string
+          ean: doc.data().ean.toString()
         }));
         setItems(datos);
       } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudieron cargar los productos',
-          confirmButtonColor: '#4fc3f7'
-        });
-        console.error('Error al cargar items:', error);
+        Swal.fire('Error', 'No se pudieron cargar los productos', 'error');
       }
     };
     cargarItems();
   }, []);
 
-  // Buscar coincidencias en tiempo real
+  // Búsqueda en tiempo real
   useEffect(() => {
-    if (busqueda.trim() === '') {
-      setResultados([]);
-      return;
-    }
-
     const resultados = items.filter(item =>
       item.Descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
       item.ean.includes(busqueda)
     );
-    setResultados(resultados.slice(0, 5)); // Limitar a 5 resultados
+    setResultados(resultados.slice(0, 5));
   }, [busqueda, items]);
 
   // Sincronizar con localStorage
   useEffect(() => {
-    localStorage.setItem('precios', JSON.stringify(precios));
-  }, [precios]);
+    localStorage.setItem('cantidad', JSON.stringify(cantidad));
+  }, [cantidad]);
 
-  // Agregar item a la tabla de precios
   const agregarItem = (item) => {
-    if (!precios.some(p => p.id === item.id)) {
-      setPrecios([...precios, { ...item, precio: '' }]);
+    if (!cantidad.some(p => p.id === item.id)) {
+      setCantidad([...cantidad, { ...item, cantidad: '' }]);
     }
     setBusqueda('');
   };
 
-  // Eliminar item de la tabla de precios
   const eliminarItem = (id) => {
-    setPrecios(precios.filter(item => item.id !== id));
+    setCantidad(cantidad.filter(item => item.id !== id));
   };
 
-  // Actualizar precio de un item
-  const actualizarPrecio = (id, nuevoPrecio) => {
-    setPrecios(precios.map(item =>
-      item.id === id ? { ...item, precio: nuevoPrecio } : item
+  const actualizarPrecio = (id, nuevoCantidad) => {
+    setCantidad(cantidad.map(item => 
+      item.id === id ? { ...item, cantidad: nuevoCantidad } : item
     ));
   };
 
-  // Descargar precios en Excel
   const descargarExcel = () => {
-    if (precios.length === 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'No hay precios',
-        text: 'Agrega al menos un precio para descargar',
-        confirmButtonColor: '#4fc3f7'
-      });
+    if (cantidad.length === 0) {
+      Swal.fire('Error', 'Agrega al menos un precio', 'warning');
       return;
     }
 
-    const datos = precios.map(item => ({
+    const datos = cantidad.map(item => ({
       EAN: item.ean,
-      Cantidad: item.precio,
+      Cantidad: item.cantidad,
       Descripción: item.Descripcion
-    }));
+        }));
 
     const libro = XLSX.utils.book_new();
     const hoja = XLSX.utils.json_to_sheet(datos);
     XLSX.utils.book_append_sheet(libro, hoja, 'Precios');
     XLSX.writeFile(libro, 'precios.xlsx');
-
-    // Limpiar después de descargar
+    
     localStorage.removeItem('precios');
-    setPrecios([]);
+    setCantidad([]);
   };
 
   return (
-    <div className="container mt-3">
+    <div className="container-fluid p-4">
       {/* Campo de búsqueda */}
       <div className="row mb-4">
-        <div className="col-md-6">
-          <Form.Group>
-            <Form.Control
-              type="text"
-              placeholder="Buscar por EAN o descripción..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </Form.Group>
-
-          {/* Resultados de búsqueda */}
+        <div className="col-12">
+          <Form.Control
+            type="text"
+            placeholder="🔍 Buscar por EAN o descripción..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="search-input"
+          />
+          
           {busqueda && (
-            <div className="list-group mt-2">
+            <div className="autocomplete-results">
               {resultados.map(item => (
-                <button
+                <div
                   key={item.id}
-                  type="button"
-                  className="list-group-item list-group-item-action"
+                  className="autocomplete-item"
                   onClick={() => agregarItem(item)}
                 >
-                  {item.ean} - {item.Descripcion}
-                </button>
+                  <span className="ean">{item.ean}</span>
+                  <span className="desc">{item.Descripcion}</span>
+                </div>
               ))}
             </div>
           )}
@@ -139,51 +118,50 @@ function RealizarPrecios() {
       </div>
 
       {/* Tabla de precios */}
-      <Table striped bordered hover responsive>
-        <thead className="bg-success text-white">
+      <Table striped bordered hover className="full-width-table">
+        <thead className="table-header">
           <tr>
-            <th>EAN</th>
-            <th>Cant.</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
+            <th className="text-center">EAN</th>
+            <th className="text-center">Descripción</th>
+            <th className="text-center">Cant</th>
+            <th className="text-center"></th>
           </tr>
         </thead>
         <tbody>
-          {precios.map(item => (
+          {cantidad.map(item => (
             <tr key={item.id}>
-              <td>{item.ean}</td>
-              <td>
+              <td className="align-middle">{item.ean}</td>
+              <td className="align-middle">{item.Descripcion}</td>
+              <td className="align-middle">
                 <Form.Control
                   type="number"
                   value={item.cantidad}
                   onChange={(e) => actualizarPrecio(item.id, e.target.value)}
                   step="1"
-                  min="1"
+                  min="0"
+                  className="price-input"
                 />
               </td>
-              <td>{item.Descripcion}</td>
-              <td>
-                <Button
-                  variant="danger"
+              <td className="text-center align-middle">
+                <FaTrash 
+                  className="trash-icon"
                   onClick={() => eliminarItem(item.id)}
-                >
-                  Eliminar
-                </Button>
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
 
-      {/* Botón para descargar Excel */}
+      {/* Botón de descarga */}
       <div className="text-center mt-4">
-        <Button
-          variant="primary"
+        <button 
+          className="download-button"
           onClick={descargarExcel}
-          disabled={precios.length === 0}
+          disabled={cantidad.length === 0}
         >
-          Descargar Precios en Excel
-        </Button>
+          Descargar Lista de Precios
+        </button>
       </div>
     </div>
   );

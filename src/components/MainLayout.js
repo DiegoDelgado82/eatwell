@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import EatWellLogo from '../img/EatWell.png';
 
+
 function MainLayout() {
   return (
     <div className="container-fluid">
@@ -19,14 +20,17 @@ function MainLayout() {
           
           <div className="d-flex justify-content-center gap-2 pb-2">
             <Link to="/generar-pedido" className="btn btn-primary btn-sm px-3">
-              Generar Pedido
+              Generar<br/> Pedido
             </Link>
             <Link to="/ver-pedidos" className="btn btn-secondary btn-sm px-3">
-              Ver Pedidos
+              Ver <br/>Pedidos
             </Link>
             <Link to="/realizar-precios" className="btn btn-success btn-sm px-3">
-              Realizar Precios
+              Realizar<br/> Precios
             </Link>
+           {/*  <Link to="/cargar-lista" className="btn btn-success btn-sm px-3">
+              Cargar<br/> Lista
+            </Link>*/}
           </div>
         </div>
       </header>
