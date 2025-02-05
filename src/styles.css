@@ -5,7 +5,7 @@
   
   /* Encabezado celeste con texto blanco */
   .custom-thead th {
-    background-color: #4fc3f7 !important; 
+    background-color: #B4D1D5  !important; 
     color: rgb(0, 0, 0) !important;
     border: 1px solid #dee2e6 !important;
     text-align: center !important;
@@ -169,12 +169,12 @@ main {
   padding: 0px;
   max-width: 100%;
 }
-
+table-bordered
 .search-input {
   width: 100%;
   padding: 12px;
   font-size: 16px;
-  border: 2px solid #4fc3f7;
+  border: 2px solid #B4D1D5 ;
   border-radius: 8px;
 }
 
@@ -254,4 +254,8 @@ main {
 .download-button:disabled {
   background: #6c757d;
   cursor: not-allowed;
+}
+
+#sucursal{
+  background-color: #41e196;
 }

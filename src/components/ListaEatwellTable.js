@@ -130,7 +130,7 @@ function ListaEatwellTable() {
   return (
     <div className="table-container">
       <div className="mb-3">
-        <Form.Select
+        <Form.Select id="sucursal"
           value={sucursal}
           onChange={(e) => setSucursal(e.target.value)}
         >
@@ -144,7 +144,7 @@ function ListaEatwellTable() {
       </div>
 
       <div className="table-responsive">
-        <table className="table table-bordered table-striped table-hover">
+        <table className="table table-bordered table-striped table-hover ">
           <thead className="custom-thead">
             <tr>
               <th className="text-center">Ean</th>
@@ -183,11 +183,12 @@ function ListaEatwellTable() {
         >
           Guardar Pedido
         </button>
-        <DownloadExcelButton
+        {/* <DownloadExcelButton
           registros={registros}
           cantidades={cantidades}
           sucursal={sucursal}
-        />
+        /> */}
+        
       </div>
     </div>
   );

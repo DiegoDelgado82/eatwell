@@ -2,13 +2,13 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import EatWellLogo from '../img/EatWell.png';
-
+import "../principal.css"
 
 function MainLayout() {
   return (
     <div className="container-fluid">
       {/* Encabezado fijo */}
-      <header className="fixed-top bg-white shadow-sm" style={{ zIndex: 1030 }}>
+      <header className="fixed-top shadow-sm encabezado" style={{ zIndex: 1030 }}>
         <div className="container">
           <div className="text-center py-2">
             <img 
