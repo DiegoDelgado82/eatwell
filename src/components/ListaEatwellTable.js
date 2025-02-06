@@ -51,9 +51,18 @@ function ListaEatwellTable() {
   }, []);
 
   const handleCantidadChange = (id, value) => {
-    const cantidad = parseInt(value, 10);
-    if (!isNaN(cantidad) && cantidad > 0) {
-      setCantidades(prev => ({ ...prev, [id]: cantidad }));
+    if (value === "") {
+      // Permite borrar completamente el input
+      setCantidades(prev => {
+        const newCantidades = { ...prev };
+        delete newCantidades[id];
+        return newCantidades;
+      });
+    } else {
+      const cantidad = parseInt(value, 10);
+      if (!isNaN(cantidad) && cantidad > 0) {
+        setCantidades(prev => ({ ...prev, [id]: cantidad }));
+      }
     }
   };
 
@@ -161,14 +170,14 @@ function ListaEatwellTable() {
                 <td className="align-middle">{registro.Descripcion}</td>
                 <td className="align-middle">{registro.UC}</td>
                 <td className="align-middle">
-                  <input
-                    type="number"
-                    min="1"
-                    style={{ width: '60px' }}
-                    value={cantidades[registro.id] || ''}
-                    onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
-                    className="form-control form-control-sm mx-auto"
-                  />
+                <input
+  type="number"
+  min="1"
+  style={{ width: '60px' }}
+  value={cantidades[registro.id]?.toString() || ""} // Convierte a string
+  onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
+  className="form-control form-control-sm mx-auto"
+/>
                 </td>
               </tr>
             ))}
