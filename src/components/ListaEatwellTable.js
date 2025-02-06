@@ -4,7 +4,7 @@ import { db } from '../firebase';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import { BounceLoader } from 'react-spinners';
-import DownloadExcelButton from './DownloadExcelButton';
+//import DownloadExcelButton from './DownloadExcelButton';
 import { Form } from 'react-bootstrap';
 import '../styles.css';
 
