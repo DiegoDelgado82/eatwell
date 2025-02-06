@@ -20,7 +20,8 @@ function ListaEatwellTable() {
     "Carrefour Recta",
     "Carrefour Villa",
     "Maxi Juan B Justo",
-    "Maxi Cacheuta"
+    "Maxi Cacheuta",
+    "Carrefour Granaderos"
   ];
 
   useEffect(() => {
