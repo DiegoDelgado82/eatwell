@@ -13,7 +13,8 @@ function RealizarPrecios() {
   const [busqueda, setBusqueda] = useState('');
   const [resultados, setResultados] = useState([]);
   const [cantidad, setCantidad] = useState(() => {
-    const guardado = localStorage.getItem('precios');
+    // Cambiamos la clave del localStorage a 'cantidad' y agregamos valor por defecto 1
+    const guardado = localStorage.getItem('cantidad');
     return guardado ? JSON.parse(guardado) : [];
   });
 
@@ -51,7 +52,8 @@ function RealizarPrecios() {
 
   const agregarItem = (item) => {
     if (!cantidad.some(p => p.id === item.id)) {
-      setCantidad([...cantidad, { ...item, cantidad: '' }]);
+      // Agregamos valor por defecto 1 en cantidad
+      setCantidad([...cantidad, { ...item, cantidad: 1 }]);
     }
     setBusqueda('');
   };
@@ -61,8 +63,10 @@ function RealizarPrecios() {
   };
 
   const actualizarPrecio = (id, nuevoCantidad) => {
+    // Validación para asegurar mínimo 1
+    const valor = Math.max(1, nuevoCantidad);
     setCantidad(cantidad.map(item => 
-      item.id === id ? { ...item, cantidad: nuevoCantidad } : item
+      item.id === id ? { ...item, cantidad: valor } : item
     ));
   };
 
@@ -76,14 +80,15 @@ function RealizarPrecios() {
       EAN: item.ean,
       Cantidad: item.cantidad,
       Descripción: item.Descripcion
-        }));
+    }));
 
     const libro = XLSX.utils.book_new();
     const hoja = XLSX.utils.json_to_sheet(datos);
     XLSX.utils.book_append_sheet(libro, hoja, 'Precios');
     XLSX.writeFile(libro, 'precios.xlsx');
     
-    localStorage.removeItem('precios');
+    // Limpiar localStorage con la clave correcta
+    localStorage.removeItem('cantidad');
     setCantidad([]);
   };
 
@@ -138,7 +143,7 @@ function RealizarPrecios() {
                   value={item.cantidad}
                   onChange={(e) => actualizarPrecio(item.id, e.target.value)}
                   step="1"
-                  min="0"
+                  min="1"
                   className="price-input"
                 />
               </td>
