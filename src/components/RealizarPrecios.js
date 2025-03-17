@@ -164,8 +164,7 @@ function RealizarPrecios() {
           className="download-button"
           onClick={descargarExcel}
           disabled={cantidad.length === 0}
-        >
-          Descargar Lista de Precios
+        >e
         </button>
       </div>
     </div>

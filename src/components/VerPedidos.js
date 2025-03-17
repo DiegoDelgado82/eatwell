@@ -1,11 +1,12 @@
 // src/components/VerPedidos.js
 import React, { useState } from 'react';
 import { db } from '../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where,orderBy, getDocs } from 'firebase/firestore';
 import { Dropdown } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { FaDownload } from 'react-icons/fa';
+ 
 
 function VerPedidos() {
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState('');
@@ -24,30 +25,30 @@ function VerPedidos() {
   const cargarPedidos = async (sucursal) => {
     setLoading(true);
     try {
-      // Consulta para buscar por sucursal y ordenar por fecha
+      // Consulta para buscar por sucursal y ordenar por fecha descendente
       const q = query(
-        collection(db, 'pedidos'),
-        where('sucursal', '==', sucursal),
-        
+        collection(db, "pedidos"),
+        where("sucursal", "==", sucursal),
+        orderBy("fecha", "desc") // Ordena por fecha descendente (más reciente primero)
       );
-
+  
       const querySnapshot = await getDocs(q);
-      const datos = querySnapshot.docs.map(doc => ({
+      const datos = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        fecha: doc.data().fecha.toDate().toLocaleDateString() // Formatear fecha
+        fecha: doc.data().fecha.toDate().toLocaleDateString(), // Formatear fecha
       }));
-
+  
       setPedidos(datos);
     } catch (error) {
       console.error("Error al cargar pedidos:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message.includes('index') 
-          ? 'Se requiere crear un índice en Firestore. Haz clic en el enlace del error.'
-          : 'No se pudieron cargar los pedidos',
-        confirmButtonColor: '#4fc3f7'
+        icon: "error",
+        title: "Error",
+        text: error.message.includes("index")
+          ? "Se requiere crear un índice en Firestore. Haz clic en el enlace del error."
+          : "No se pudieron cargar los pedidos",
+        confirmButtonColor: "#4fc3f7",
       });
     }
     setLoading(false);
