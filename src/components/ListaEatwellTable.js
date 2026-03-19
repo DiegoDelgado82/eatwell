@@ -4,7 +4,6 @@ import { db } from '../firebase';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import { BounceLoader } from 'react-spinners';
-//import DownloadExcelButton from './DownloadExcelButton';
 import { Form } from 'react-bootstrap';
 import '../styles.css';
 
@@ -13,6 +12,7 @@ function ListaEatwellTable() {
   const [loading, setLoading] = useState(true);
   const [cantidades, setCantidades] = useState({});
   const [sucursal, setSucursal] = useState('');
+  const [busqueda, setBusqueda] = useState('');
 
   const sucursales = [
     "Carrefour Colón",
@@ -31,7 +31,7 @@ function ListaEatwellTable() {
         const data = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          ean: doc.data().ean.toString() // Asegurar que ean sea string
+          ean: doc.data().ean?.toString() || ''
         }));
         data.sort((a, b) => a.pos - b.pos);
         setRegistros(data);
@@ -52,7 +52,6 @@ function ListaEatwellTable() {
 
   const handleCantidadChange = (id, value) => {
     if (value === "") {
-      // Permite borrar completamente el input
       setCantidades(prev => {
         const newCantidades = { ...prev };
         delete newCantidades[id];
@@ -116,7 +115,7 @@ function ListaEatwellTable() {
         confirmButtonColor: '#4fc3f7'
       });
 
-      setCantidades({}); // Limpiar cantidades
+      setCantidades({});
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -127,6 +126,18 @@ function ListaEatwellTable() {
       console.error('Error al guardar el pedido:', error);
     }
   };
+
+  const textoBusqueda = busqueda.trim().toLowerCase();
+
+  const registrosFiltrados = registros.filter((registro) => {
+    const ean = registro.ean?.toString().toLowerCase() || '';
+    const descripcion = registro.Descripcion?.toLowerCase() || '';
+
+    return (
+      ean.includes(textoBusqueda) ||
+      descripcion.includes(textoBusqueda)
+    );
+  });
 
   if (loading) {
     return (
@@ -140,7 +151,8 @@ function ListaEatwellTable() {
   return (
     <div className="table-container">
       <div className="mb-3">
-        <Form.Select id="sucursal"
+        <Form.Select
+          id="sucursal"
           value={sucursal}
           onChange={(e) => setSucursal(e.target.value)}
         >
@@ -153,8 +165,17 @@ function ListaEatwellTable() {
         </Form.Select>
       </div>
 
+      <div className="mb-3">
+        <Form.Control
+          type="text"
+          placeholder="Buscar por EAN o descripción..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+      </div>
+
       <div className="table-responsive">
-        <table className="table table-bordered table-striped table-hover ">
+        <table className="table table-bordered table-striped table-hover">
           <thead className="custom-thead">
             <tr>
               <th className="text-center">Ean</th>
@@ -164,23 +185,31 @@ function ListaEatwellTable() {
             </tr>
           </thead>
           <tbody>
-            {registros.map(registro => (
-              <tr key={registro.id} className="text-center">
-                <td className="align-middle">{registro.ean}</td>
-                <td className="align-middle">{registro.Descripcion}</td>
-                <td className="align-middle">{registro.UC}</td>
-                <td className="align-middle">
-                <input
-  type="number"
-  min="1"
-  style={{ width: '60px' }}
-  value={cantidades[registro.id]?.toString() || ""} // Convierte a string
-  onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
-  className="form-control form-control-sm mx-auto"
-/>
+            {registrosFiltrados.length > 0 ? (
+              registrosFiltrados.map(registro => (
+                <tr key={registro.id} className="text-center">
+                  <td className="align-middle">{registro.ean}</td>
+                  <td className="align-middle">{registro.Descripcion}</td>
+                  <td className="align-middle">{registro.UC}</td>
+                  <td className="align-middle">
+                    <input
+                      type="number"
+                      min="1"
+                      style={{ width: '60px' }}
+                      value={cantidades[registro.id]?.toString() || ""}
+                      onChange={(e) => handleCantidadChange(registro.id, e.target.value)}
+                      className="form-control form-control-sm mx-auto"
+                    />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center py-3">
+                  No se encontraron productos para la búsqueda ingresada.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -193,12 +222,6 @@ function ListaEatwellTable() {
         >
           Guardar Pedido
         </button>
-        {/* <DownloadExcelButton
-          registros={registros}
-          cantidades={cantidades}
-          sucursal={sucursal}
-        /> */}
-        
       </div>
     </div>
   );

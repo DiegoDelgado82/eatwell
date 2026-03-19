@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import EatWellLogo from '../img/EatWell.png';
-import "../principal.css"
+import "../principal.css";
 
 function MainLayout() {
   return (
@@ -11,33 +11,42 @@ function MainLayout() {
       <header className="fixed-top shadow-sm encabezado" style={{ zIndex: 1030 }}>
         <div className="container">
           <div className="text-center py-2">
-            <img 
-              src={EatWellLogo} 
-              alt="EatWell Logo" 
+            <img
+              src={EatWellLogo}
+              alt="EatWell Logo"
               style={{ width: '140px' }}
             />
           </div>
-          
-          <div className="d-flex justify-content-center gap-2 pb-2">
+
+          <div className="d-flex justify-content-center gap-2 pb-2 flex-wrap">
             <Link to="/generar-pedido" className="btn btn-primary btn-sm px-3">
-              Generar<br/> Pedido
+              Generar<br />Pedido
             </Link>
+
             <Link to="/ver-pedidos" className="btn btn-secondary btn-sm px-3">
-              Ver <br/>Pedidos
+              Ver <br />Pedidos
             </Link>
+
             <Link to="/realizar-precios" className="btn btn-success btn-sm px-3">
-              Realizar<br/> Precios
+              Realizar<br />Precios
             </Link>
-           {/*  <Link to="/cargar-lista" className="btn btn-success btn-sm px-3">
-              Cargar<br/> Lista
-            </Link>*/}
+
+            <Link to="/crud-articulos" className="btn btn-warning btn-sm px-3">
+              Gestión<br />Productos
+            </Link>
+
+            {/*
+            <Link to="/cargar-lista" className="btn btn-success btn-sm px-3">
+              Cargar<br />Lista
+            </Link>
+            */}
           </div>
         </div>
       </header>
 
       {/* Contenido principal con espacio adaptativo */}
-      <main className="container-fluid mt-5 pt-3">
-        <div className="container" style={{ paddingTop: '80px' }}>
+      <main className="container-fluid" style={{ marginTop: '140px' }}>
+  <div className="container">
           <Outlet />
         </div>
       </main>
