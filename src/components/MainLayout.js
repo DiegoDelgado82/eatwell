@@ -24,7 +24,7 @@ function MainLayout() {
             </Link>
 
             <Link to="/ver-pedidos" className="btn btn-secondary btn-sm px-3">
-              Ver <br />Pedidos
+              Gestión<br />Pedidos
             </Link>
 
             <Link to="/realizar-precios" className="btn btn-success btn-sm px-3">
